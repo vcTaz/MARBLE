@@ -4,11 +4,15 @@ from typing import Any, Dict
 
 from ruamel.yaml import YAML
 
+from marble.llms.defaults import DEFAULT_LLM
 from marble.llms.model_prompting import model_prompting
 
 
 def create_solution_handler(
-    env, task_description: str, model_name: str, file_path: str = "solution.py"
+    env,
+    task_description: str,
+    model_name: str = DEFAULT_LLM,
+    file_path: str = "solution.py",
 ) -> Dict[str, Any]:
     """
     Creates solution.py file and generates content based on task description.
@@ -222,13 +226,8 @@ def register_coder_actions(env):
                             "type": "string",
                             "description": "Description of the task (will be read from config file)",
                         },
-                        "model_name": {
-                            "type": "string",
-                            "description": "Name of the LLM model to use",
-                            "default": "gpt-3.5-turbo",
-                        },
                     },
-                    "required": ["task_description", "model_name"],
+                    "required": ["task_description"],
                     "additionalProperties": False,
                 },
             },

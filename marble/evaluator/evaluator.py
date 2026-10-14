@@ -11,6 +11,7 @@ from ruamel.yaml import YAML
 
 from marble.agent import BaseAgent
 from marble.environments import BaseEnvironment
+from marble.llms.defaults import DEFAULT_LLM
 from marble.llms.model_prompting import model_prompting
 from marble.utils.logger import get_logger
 
@@ -38,11 +39,12 @@ class Evaluator:
             "agent_kpis": {},
             "code_quality": {}
         }
-        with open('evaluator/evaluator_prompts.json', 'r', encoding='utf-8') as f:
+        prompts_path = os.path.join(os.path.dirname(__file__), 'evaluator_prompts.json')
+        with open(prompts_path, 'r', encoding='utf-8') as f:
             self.evaluation_prompts = json.load(f)
 
         evaluate_llm_config = self.metrics_config.get('evaluate_llm', {})
-        self.llm = evaluate_llm_config.get('model', 'gpt-3.5-turbo') if isinstance(evaluate_llm_config, dict) else evaluate_llm_config
+        self.llm = evaluate_llm_config.get('model', DEFAULT_LLM) if isinstance(evaluate_llm_config, dict) else evaluate_llm_config
 
 
 
@@ -309,23 +311,21 @@ class Evaluator:
         Returns:
             Dict[str, int]: The parsed ratings.
         """
-        try:
-            content = assistant_answer.strip()
+        content = assistant_answer.strip()
 
-            json_start = content.find('{')
-            json_end = content.rfind('}') + 1
+        json_start = content.find('{')
+        json_end = content.rfind('}') + 1
 
-            if json_start >= 0 and json_end > json_start:
-                json_str = content[json_start:json_end]
-                ratings = json.loads(json_str)
-                # Ensure ratings are integers
-                ratings_dict: Dict[str, int] = {k: int(v) for k, v in ratings.items()}
-                return ratings_dict
-            except json.JSONDecodeError:
-                self.logger.error("Failed to parse JSON from assistant's answer.")
-                return {}
-        else:
+        if json_start < 0 or json_end <= json_start:
             self.logger.error("No JSON found in assistant's answer.")
+            return {}
+        try:
+            ratings = json.loads(content[json_start:json_end])
+            # Ensure ratings are integers
+            ratings_dict: Dict[str, int] = {k: int(v) for k, v in ratings.items()}
+            return ratings_dict
+        except (json.JSONDecodeError, AttributeError, TypeError, ValueError):
+            self.logger.error("Failed to parse JSON from assistant's answer.")
             return {}
 
     def parse_score(self, assistant_answer: str) -> int:

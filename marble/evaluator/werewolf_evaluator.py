@@ -51,7 +51,7 @@ class WerewolfEvaluator:
         eval_config = config.get("eval_config", {})
 
         self.base_url = eval_config.get("base_url", "https://api.openai.com/v1")
-        self.api_key = eval_config.get("api_key", "")
+        self.api_key = eval_config.get("api_key") or os.environ.get("OPENAI_API_KEY", "")
         self.model_name = eval_config.get("model_name", "gpt-4o")
 
         openai.api_base = self.base_url
@@ -551,7 +551,9 @@ if __name__ == "__main__":
     parser.add_argument(
         "--config_path",
         type=str,
-        default=r"marble\configs\test_config\werewolf_config.yaml",
+        default=os.path.join(
+            "marble", "configs", "test_config", "werewolf_config", "werewolf_config.yaml"
+        ),
         help="Path to the configuration file",
     )
     parser.add_argument(

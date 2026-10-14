@@ -1,3 +1,4 @@
+import os
 import unittest
 
 from litellm.types.utils import Message
@@ -5,6 +6,7 @@ from litellm.types.utils import Message
 from marble.llms.model_prompting import model_prompting
 
 
+@unittest.skipUnless(os.environ.get("OPENAI_API_KEY"), "requires OPENAI_API_KEY")
 class TestModelPrompting(unittest.TestCase):
     def test_model_prompting(self) -> None:
         prompt = "This is a test sentence."

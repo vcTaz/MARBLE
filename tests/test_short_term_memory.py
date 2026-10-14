@@ -1,13 +1,19 @@
 import unittest
-from collections import deque
+from unittest.mock import patch
 
 from litellm.types.utils import Message
 
 from marble.memory.short_term_memory import ShortTermMemory
 
 
-class TestLongTermMemory(unittest.TestCase):
+class TestShortTermMemory(unittest.TestCase):
     def setUp(self) -> None:
+        patcher = patch(
+            "marble.memory.short_term_memory.model_prompting",
+            return_value=[Message(content="summary", role="assistant")],
+        )
+        patcher.start()
+        self.addCleanup(patcher.stop)
         self.memory = ShortTermMemory(memory_limit=2)
 
     def test_update(self) -> None:
@@ -19,7 +25,7 @@ class TestLongTermMemory(unittest.TestCase):
         self.memory.update(
             key="key", information={"type": "action_response", "result": result_2}
         )
-        self.assertIsInstance(self.memory.storage, deque)
+        self.assertIsInstance(self.memory.storage, list)
         self.assertIsInstance(self.memory.storage[0], dict)
         self.assertEqual(len(self.memory.storage), 2)
 
@@ -27,7 +33,7 @@ class TestLongTermMemory(unittest.TestCase):
         self.memory.update(
             key="key", information={"type": "action_response", "result": result_3}
         )
-        self.assertIsInstance(self.memory.storage, deque)
+        self.assertIsInstance(self.memory.storage, list)
         self.assertIsInstance(self.memory.storage[0], dict)
         self.assertEqual(len(self.memory.storage), 2)
 
@@ -68,6 +74,7 @@ class TestLongTermMemory(unittest.TestCase):
         self.assertNotIn(information_1, all_information)
         self.assertNotIn(information_2, all_information)
         self.assertIn(information_3, all_information)
+        self.assertEqual(all_information[0]["type"], "old_memory_summary")
         self.assertEqual(len(all_information), 2)
 
 
