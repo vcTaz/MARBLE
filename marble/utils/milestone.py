@@ -2,14 +2,17 @@ import time
 
 import yaml
 
+from marble.llms.defaults import DEFAULT_LLM
 
-def generate_task_milestones(task_description, client):
+
+def generate_task_milestones(task_description, client, model=DEFAULT_LLM):
     """
     Generate milestones for a given task by calling the GPT tool.
 
     Args:
         task_description (str): The description of the main task to break down.
         client: The OpenAI client instance.
+        model (str): Model name passed to the client. Defaults to DEFAULT_LLM.
 
     Returns:
         list or None: Returns a list of milestones if successful, otherwise None.
@@ -43,7 +46,7 @@ def generate_task_milestones(task_description, client):
         rounds += 1
         try:
             response = client.chat.completions.create(
-                model="gpt-4o",
+                model=model,
                 messages=messages,
                 tools=[tool],
                 tool_choice="required",

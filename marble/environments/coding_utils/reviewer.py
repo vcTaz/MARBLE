@@ -6,6 +6,7 @@ from typing import Any, Dict
 
 from ruamel.yaml import YAML
 
+from marble.llms.defaults import DEFAULT_LLM
 from marble.llms.model_prompting import model_prompting
 
 
@@ -22,7 +23,7 @@ def log_debug_info(message: str, log_file: str = "marble/logs/advice_log"):
 
 
 def give_advice_and_revise_handler(
-    env, task_description: str, model_name: str
+    env, task_description: str, model_name: str = DEFAULT_LLM
 ) -> Dict[str, Any]:
     """
     Reads solution.py content, provides improvement suggestions based on task description, and revises the code accordingly.
@@ -266,13 +267,8 @@ def register_reviewer_actions(env):
                             "type": "string",
                             "description": "Description of the task (will be read from config file)",
                         },
-                        "model_name": {
-                            "type": "string",
-                            "description": "Name of the LLM model to use",
-                            "default": "gpt-3.5-turbo",
-                        },
                     },
-                    "required": ["task_description", "model_name"],
+                    "required": ["task_description"],
                     "additionalProperties": False,
                 },
             },

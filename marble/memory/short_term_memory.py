@@ -2,6 +2,7 @@ from typing import Any, Dict, List, Optional, Union
 
 from litellm.types.utils import Message
 
+from marble.llms.defaults import DEFAULT_LLM
 from marble.llms.model_prompting import model_prompting
 from marble.memory.base_memory import BaseMemory
 
@@ -64,7 +65,7 @@ class ShortTermMemory(BaseMemory):
             prompt += f"{idx}. {str(information)}\n"
 
         summary = model_prompting(
-            llm_model="gpt-3.5-turbo",
+            llm_model=DEFAULT_LLM,
             messages=[{"role": "system", "content": prompt}],
             return_num=1,
             max_token_num=512,

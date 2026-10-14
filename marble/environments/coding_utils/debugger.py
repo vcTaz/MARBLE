@@ -4,6 +4,7 @@ import os
 import subprocess
 from typing import Any, Dict
 
+from marble.llms.defaults import DEFAULT_LLM
 from marble.llms.model_prompting import model_prompting
 
 
@@ -28,7 +29,7 @@ def extract_python_code(content: str) -> str:
 
 
 def run_and_debug_solution_handler(
-    env, model_name: str, file_path: str = "solution.py"
+    env, model_name: str = DEFAULT_LLM, file_path: str = "solution.py"
 ) -> Dict[str, Any]:
     """
     Runs the solution.py file, captures any errors, and uses model_prompting to suggest fixes if errors occur.
@@ -162,16 +163,12 @@ def register_debugger_actions(env):
                 "parameters": {
                     "type": "object",
                     "properties": {
-                        "model_name": {
-                            "type": "string",
-                            "description": "Name of the LLM model to use (e.g., 'gpt-3.5-turbo', 'gpt-4')",
-                        },
                         "file_path": {
                             "type": "string",
                             "description": "Path of the solution file to run and debug (optional, defaults to 'solution.py')",
                         },
                     },
-                    "required": ["model_name"],
+                    "required": [],
                     "additionalProperties": False,
                 },
             },

@@ -12,6 +12,7 @@ from litellm import token_counter
 from litellm.types.utils import Message
 
 from marble.graph.agent_graph import AgentGraph
+from marble.llms.defaults import DEFAULT_LLM
 from marble.llms.model_prompting import model_prompting
 from marble.utils.logger import get_logger
 
@@ -78,7 +79,7 @@ class EnginePlanner:
         memory: Any,
         config: Dict[str, Any],
         task: str,
-        model: str = "gpt-3.5-turbo",
+        model: str = DEFAULT_LLM,
     ):
         """
         Initialize the EnginePlanner.
@@ -88,7 +89,7 @@ class EnginePlanner:
             memory (Any): Shared memory instance (an instance of SharedMemory).
             config (Dict[str, Any]): Configuration parameters.
             task (str): The overall task description.
-            model (str, optional): The LLM model to use. Defaults to "gpt-3.5-turbo".
+            model (str, optional): The LLM model to use. Defaults to DEFAULT_LLM (env MARBLE_DEFAULT_LLM).
         """
         self.agent_graph = agent_graph
         self.memory = memory  # Expected to be an instance of SharedMemory.

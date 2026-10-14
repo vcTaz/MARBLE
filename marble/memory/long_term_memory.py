@@ -6,6 +6,7 @@ from litellm.types.utils import Message
 from numpy.typing import NDArray
 from sklearn.metrics.pairwise import cosine_similarity
 
+from marble.llms.defaults import DEFAULT_EMBEDDING_MODEL, DEFAULT_LLM
 from marble.llms.model_prompting import model_prompting
 from marble.llms.text_embedding import text_embedding
 from marble.memory.base_memory import BaseMemory
@@ -32,7 +33,7 @@ class LongTermMemory(BaseMemory):
             information (Dict[str, Union[str, Message]]): Information to store.
         """
         embedding = text_embedding(
-            model="text-embedding-3-small",
+            model=DEFAULT_EMBEDDING_MODEL,
             input=str(information),
         )
         embedding_array: NDArray[Any] = np.array(embedding)
@@ -67,7 +68,7 @@ class LongTermMemory(BaseMemory):
         if not self.storage:
             return None
         embedding = text_embedding(
-            model="text-embedding-3-small",
+            model=DEFAULT_EMBEDDING_MODEL,
             input=str(information),
         )
         embedding_array: NDArray[Any] = np.array(embedding)
@@ -109,7 +110,7 @@ class LongTermMemory(BaseMemory):
             prompt += f"{idx}. {str(information)}\n"
 
         summary = model_prompting(
-            llm_model="gpt-3.5-turbo",
+            llm_model=DEFAULT_LLM,
             messages=[{"role": "system", "content": prompt}],
             return_num=1,
             max_token_num=512,

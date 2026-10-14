@@ -10,6 +10,7 @@ from typing import Any, Dict, List, Optional, Tuple, TypeVar, Union
 from litellm.utils import token_counter
 
 from marble.environments import BaseEnvironment, CodingEnvironment, WebEnvironment
+from marble.llms.defaults import DEFAULT_LLM
 from marble.llms.model_prompting import model_prompting
 from marble.memory import BaseMemory, SharedMemory
 from marble.utils.logger import get_logger
@@ -37,7 +38,7 @@ class BaseAgent:
         config: Dict[str, Union[Any, Dict[str, Any]]],
         env: EnvType,
         shared_memory: Union[SharedMemory, None] = None,
-        model: str = "gpt-3.5-turbo",
+        model: str = DEFAULT_LLM,
     ):
         """
         Initialize the agent.
@@ -49,7 +50,7 @@ class BaseAgent:
         """
         agent_id = config.get("agent_id")
         if isinstance(model, dict):
-            self.llm = model.get("model", "gpt-3.5-turbo")
+            self.llm = model.get("model", DEFAULT_LLM)
         else:
             self.llm = model
         assert isinstance(agent_id, str), "agent_id must be a string."
