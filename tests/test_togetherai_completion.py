@@ -1,8 +1,6 @@
-import os
+"""Manual smoke check for TogetherAI; reads TOGETHERAI_API_KEY from the environment."""
 
 from litellm import completion
-
-os.environ["TOGETHERAI_API_KEY"] = "YOUR_API_KEY"
 
 
 def generate_text(prompt):

@@ -1,8 +1,10 @@
+import os
 import unittest
 
 from marble.llms.text_embedding import text_embedding
 
 
+@unittest.skipUnless(os.environ.get("OPENAI_API_KEY"), "requires OPENAI_API_KEY")
 class TestTextEmbedding(unittest.TestCase):
     def test_text_embedding(self) -> None:
         content = "This is a test sentence."

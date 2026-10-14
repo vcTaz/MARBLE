@@ -1,4 +1,6 @@
 import unittest
+from typing import List
+from unittest.mock import patch
 
 from litellm.types.utils import Message
 from numpy import ndarray
@@ -6,8 +8,30 @@ from numpy import ndarray
 from marble.memory.long_term_memory import LongTermMemory
 
 
+def fake_embedding(model: str, input: str) -> List[float]:
+    """Keyword embedding so retrieval is deterministic and needs no API."""
+    return [
+        1.0 if ("cold" in input or "weather" in input) else 0.0,
+        1.0 if "sleep" in input else 0.0,
+        0.1,
+    ]
+
+
 class TestLongTermMemory(unittest.TestCase):
     def setUp(self) -> None:
+        patchers = [
+            patch(
+                "marble.memory.long_term_memory.text_embedding",
+                side_effect=fake_embedding,
+            ),
+            patch(
+                "marble.memory.long_term_memory.model_prompting",
+                return_value=[Message(content="summary", role="assistant")],
+            ),
+        ]
+        for patcher in patchers:
+            patcher.start()
+            self.addCleanup(patcher.stop)
         self.memory = LongTermMemory()
 
     def test_update(self) -> None:
