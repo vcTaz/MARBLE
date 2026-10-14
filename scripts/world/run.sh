@@ -1,13 +1,17 @@
 #!/bin/bash
 
 # Define the directory containing the YAML configuration files
-CONFIG_DIR="/Users/guoshuyi/Desktop/marble2/MARBLE/data/bargaining-data/yaml-seller-Llama-3.1-70B-Instruct-Turbo"
+CONFIG_DIR="${1:?Usage: run.sh <directory of bargaining YAML configs>}"
 
 # Check if the directory exists
 if [ ! -d "$CONFIG_DIR" ]; then
     echo "Error: Directory $CONFIG_DIR does not exist."
     exit 1
 fi
+CONFIG_DIR="$(cd "$CONFIG_DIR" && pwd)"
+
+# cd to marble directory
+cd "$(dirname "$0")/../../marble"
 
 # Iterate over all YAML files in the directory
 for CONFIG_FILE in "$CONFIG_DIR"/*.yaml; do
